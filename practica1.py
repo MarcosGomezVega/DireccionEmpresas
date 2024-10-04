@@ -42,13 +42,7 @@ def genePermut (numOrdenes):
 
     while listaOrdenes:
         aleatorio = random.choice(listaOrdenes)
-
-        #Cambiarlo despues para tener en cuenta los valores de cada orden y maquina
-        #====================================================
-
         permut.append(aleatorio)
-
-        #======================================================
         listaOrdenes.remove(aleatorio)
     
     return permut
@@ -72,11 +66,14 @@ def devolverMatrizF ( orden, matriz, numMaquinas ):
         
 def busqeudaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
     matrizSolucion=[]
-    mejorValorF=0
+    mejorValorF=float('inf')
 
     for i in range(numIteraciones):
         ordenAleatorio=genePermut(numOrden)
         matrizF=devolverMatrizF(ordenAleatorio, matrizD, numMaquinas)
+        print("matriz"+str(i))
+        for fila in matrizF:
+            print(fila)
         matrizFAplanada = [elemento for fila in matrizF for elemento in fila]
         maximoValorMatrizF=max(matrizFAplanada)
         if maximoValorMatrizF<mejorValorF:
@@ -109,7 +106,7 @@ for fila in matrizF:
 
 numeroDeIteraciones= input("Introduce el numero de iteraciones: ")
 solucion,mejorValorF=busqeudaAleatoria(numOrdenes, int(numeroDeIteraciones), matrizD, numMaquinas)
-print ("Solucion")
+print ("SOLUCION")
 for fila in solucion: 
     print(fila)
 print(mejorValorF)
