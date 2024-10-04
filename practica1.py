@@ -77,8 +77,9 @@ def busqeudaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
     for i in range(numIteraciones):
         ordenAleatorio=genePermut(numOrden)
         matrizF=devolverMatrizF(ordenAleatorio, matrizD, numMaquinas)
-        maximoValorMatrizF=max(matrizF[numMaquinas-1])
-        if maximoValorMatrizF>mejorValorF:
+        matrizFAplanada = [elemento for fila in matrizF for elemento in fila]
+        maximoValorMatrizF=max(matrizFAplanada)
+        if maximoValorMatrizF<mejorValorF:
             mejorValorF=maximoValorMatrizF
             matrizSolucion=matrizF
 
