@@ -3,7 +3,9 @@ import random
 def guardarNombreArchivo():
     
     file_name = input("Introduce el nombre del archivo: ")
-    file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/{file_name}'
+    #file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/{file_name}'
+    file_path = f'C:/Users/pablo/Desktop/Estudios/Universidad/4º/1 cuatri/Org y Gest Empresas/Practica/ProblemasFlowShopPermutacional/{file_name}'
+
 
     return file_path
 
@@ -64,14 +66,14 @@ def devolverMatrizF ( orden, matriz, numMaquinas ):
 
     return matrizJ
         
-def busqeudaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
+def busquedaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
     matrizSolucion=[]
     mejorValorF=float('inf')
 
     for i in range(numIteraciones):
         ordenAleatorio=genePermut(numOrden)
         matrizF=devolverMatrizF(ordenAleatorio, matrizD, numMaquinas)
-        print("matriz"+str(i))
+        print("matriz "+str(i))
         for fila in matrizF:
             print(fila)
         matrizFAplanada = [elemento for fila in matrizF for elemento in fila]
@@ -82,6 +84,28 @@ def busqeudaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
 
         
     return matrizSolucion, mejorValorF
+
+
+def menuDeModo():
+
+    print("--== Menu de Modos de Ejecucion ==--")
+    print("    (elige el numero del modo)")
+    print("1) Modo Aleatorio")
+    print("2)...")
+
+    op= input("Modo seleccionado: ")
+
+    match op:
+        case "1":
+            numeroDeIteraciones= input("Introduce el numero de iteraciones: ")
+            solucion,mejorValorF=busquedaAleatoria(numOrdenes, int(numeroDeIteraciones), matrizD, numMaquinas)
+
+    #case "2"...:
+
+    return solucion,mejorValorF
+
+    
+
 #----------------------------#
 #                            #
 #        MAIN PROGRAM        #
@@ -104,8 +128,8 @@ print ("Matriz J")
 for fila in matrizF:
     print(fila)
 
-numeroDeIteraciones= input("Introduce el numero de iteraciones: ")
-solucion,mejorValorF=busqeudaAleatoria(numOrdenes, int(numeroDeIteraciones), matrizD, numMaquinas)
+solucion, mejorValorF = menuDeModo()
+
 print ("SOLUCION")
 for fila in solucion: 
     print(fila)
