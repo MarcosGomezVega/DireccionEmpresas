@@ -88,10 +88,10 @@ def busquedaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
 
 def menuDeModo():
 
-    print("--== Menu de Modos de Ejecucion ==--")
-    print("    (elige el numero del modo)")
-    print("1) Modo Aleatorio")
-    print("2)...")
+    print("--== Menu de Modos de Ejecucion ==--"
+            "    (elige el numero del modo)"
+            "1) Modo Aleatorio"
+            "2)...")
 
     op= input("Modo seleccionado: ")
 
