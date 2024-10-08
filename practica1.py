@@ -5,7 +5,7 @@ def guardarNombreArchivo():
     file_name = input("Introduce el nombre del archivo: ")
     file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/{file_name}'
     #file_path = f'C:/Users/pablo/Desktop/Estudios/Universidad/4º/1 cuatri/Org y Gest Empresas/Practica/ProblemasFlowShopPermutacional/{file_name}'
-
+    #file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/ejem_clase1.txt'
 
     return file_path
 
@@ -60,7 +60,8 @@ def devolverMatrizF ( orden, matriz, numMaquinas ):
             tiempoActual += tiempoPiezMaquina
             tiempoFinal=tiempoActual
             if maquina>0:
-                tiempoFinal= max(tiempoActual,matrizJ[pieza-1][maquina-1])+tiempoPiezMaquina
+                if tiempoFinal<matrizJ[pieza-1][maquina-1]:
+                    tiempoFinal= max(tiempoActual,matrizJ[pieza-1][maquina-1])+tiempoPiezMaquina
 
             matrizJ[pieza-1][maquina]=tiempoFinal
 
@@ -76,33 +77,86 @@ def busquedaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
         print("matriz "+str(i))
         for fila in matrizF:
             print(fila)
-        matrizFAplanada = [elemento for fila in matrizF for elemento in fila]
-        maximoValorMatrizF=max(matrizFAplanada)
+        maximoValorMatrizF=fMax(matrizF)
+        mediaUltimaColumna = fMed( matrizF,numOrden)
+        print(mediaUltimaColumna)
         if maximoValorMatrizF<mejorValorF:
             mejorValorF=maximoValorMatrizF
             matrizSolucion=matrizF
 
         
-    return matrizSolucion, mejorValorF
+    return matrizSolucion, mejorValorF, ordenAleatorio
 
+def localAuxiliar(ordenBueno, matrizFBuena,solucionFinal):
+
+    for i in range(len(ordenBueno)):
+        for j in range(i+1,len(ordenBueno)):
+            ordenPrimos=ordenBueno.copy()
+            ordenPrimos[i],ordenPrimos[j]=ordenPrimos[j],ordenPrimos[i]
+            matrizFPrimo=devolverMatrizF(ordenPrimos, matrizD, numMaquinas)
+            maximoPrimo=fMax(matrizFPrimo)
+            if solucionFinal > maximoPrimo:
+                ordenBueno=ordenPrimos
+                matrizFBuena=matrizFPrimo
+                solucionFinal=maximoPrimo
+                return ordenBueno, matrizFBuena, solucionFinal
+            
+    return ordenBueno, matrizFBuena, solucionFinal
+
+def busquedaLocal(numOrdenes, matrizD, numMaquinas):
+
+    solucionFinal=float('inf')
+    #ordenBueno=genePermut(numOrdenes)
+    ordenBueno=[9,4,1,2,8,3,10,7,5,11,6]
+    print(ordenBueno)
+    matrizFBuena=devolverMatrizF(ordenBueno, matrizD, numMaquinas)
+    print("Matriz F Inicial")
+    for file in matrizFBuena:
+        print(file)
+    solucionFinal=fMax(matrizFBuena)  
+ 
+    
+    while True:
+        ordenBueno, matrizFBuena, solucionPrimo=localAuxiliar(ordenBueno, matrizFBuena,solucionFinal)
+        if solucionFinal == solucionPrimo:
+            return matrizFBuena, solucionFinal, ordenBueno
+        else:
+            solucionFinal=solucionPrimo
+    
+
+
+def fMax(matriz):
+
+    maximo=max(row[-1] for row in matriz)
+
+    return maximo
+
+def fMed(matriz, numOrden):
+
+    promedio = sum(row[-1] for row in matriz) / numOrden
+
+    return promedio
 
 def menuDeModo():
 
-    print("--== Menu de Modos de Ejecucion ==--"
-            "    (elige el numero del modo)"
-            "1) Modo Aleatorio"
-            "2)...")
+    print("--== Menu de Modos de Ejecucion ==-- \n"
+            "    (elige el numero del modo)\n"
+            "1) Modo Aleatorio\n"
+            "2) Modo Busqueda Local\n"
+            "3) Modo Recocido Simulado\n"
+            "4) Modo Algoritmo Genetico\n")
 
     op= input("Modo seleccionado: ")
 
     match op:
         case "1":
             numeroDeIteraciones= input("Introduce el numero de iteraciones: ")
-            solucion,mejorValorF=busquedaAleatoria(numOrdenes, int(numeroDeIteraciones), matrizD, numMaquinas)
+            solucion,mejorValorF, ordenFinal=busquedaAleatoria(numOrdenes, int(numeroDeIteraciones), matrizD, numMaquinas)
 
-    #case "2"...:
+        case "2":
+            solucion,mejorValorF,ordenFinal=busquedaLocal(numOrdenes,matrizD, numMaquinas)
 
-    return solucion,mejorValorF
+    return solucion,mejorValorF, ordenFinal
 
     
 
@@ -128,9 +182,13 @@ print ("Matriz J")
 for fila in matrizF:
     print(fila)
 
-solucion, mejorValorF = menuDeModo()
+solucion, mejorValorF, ordenFinal = menuDeModo()
 
 print ("SOLUCION")
 for fila in solucion: 
     print(fila)
 print(mejorValorF)
+
+
+print ("Orden Final")
+print(ordenFinal)
