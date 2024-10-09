@@ -3,6 +3,7 @@ import random
 def guardarNombreArchivo():
     
     file_name = input("Introduce el nombre del archivo: ")
+
     file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/{file_name}'
     #file_path = f'C:/Users/pablo/Desktop/Estudios/Universidad/4º/1 cuatri/Org y Gest Empresas/Practica/ProblemasFlowShopPermutacional/{file_name}'
     #file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/ejem_clase1.txt'
@@ -50,22 +51,25 @@ def genePermut (numOrdenes):
     return permut
 
 def devolverMatrizF ( orden, matriz, numMaquinas ):
-    matrizJ = [[0] * len(matriz[0]) for _ in range(len(matriz))]
-    tiempoActual=0
+    matrizF = [[0] * len(matriz[0]) for _ in range(len(matriz))]
 
     for maquina in range(numMaquinas):
-        tiempoActual=0
-        for pieza in orden:
-            tiempoPiezMaquina = matriz[pieza-1][maquina]
-            tiempoActual += tiempoPiezMaquina
-            tiempoFinal=tiempoActual
-            if maquina>0:
-                if tiempoFinal<matrizJ[pieza-1][maquina-1]:
-                    tiempoFinal= max(tiempoActual,matrizJ[pieza-1][maquina-1])+tiempoPiezMaquina
+        for idx, pieza in enumerate(orden):
+            pieza=pieza-1
+            if maquina==0:
+                if idx == 0:
+                    matrizF[pieza][maquina] = matriz[pieza][maquina]
+                else:
+                    matrizF[pieza][maquina] = matrizF[orden[idx - 1]-1][maquina] + matriz[pieza][maquina]
+            else:
+                if idx == 0:
+                    matrizF[pieza][maquina] = matrizF[pieza][maquina-1] + matriz[pieza][maquina]
+                else:
+                    x=matrizF[pieza][maquina-1]
+                    y= matrizF[orden[idx - 1]-1][maquina]
+                    matrizF[pieza][maquina] = max(x,y) + matriz[pieza][maquina]
 
-            matrizJ[pieza-1][maquina]=tiempoFinal
-
-    return matrizJ
+    return matrizF
         
 def busquedaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
     matrizSolucion=[]
@@ -123,8 +127,6 @@ def busquedaLocal(numOrdenes, matrizD, numMaquinas):
         else:
             solucionFinal=solucionPrimo
     
-
-
 def fMax(matriz):
 
     maximo=max(row[-1] for row in matriz)
@@ -168,19 +170,6 @@ def menuDeModo():
 
 numOrdenes,numMaquinas,matrizD=guardarValoresArchivo()
 orden=genePermut(numOrdenes)
-
-print ("Matriz D")
-for fila in matrizD:
-    print(fila)
-    
-matrizF=devolverMatrizF(orden,matrizD, numMaquinas)
-
-print ("Orden")
-print(orden)
-
-print ("Matriz J")
-for fila in matrizF:
-    print(fila)
 
 solucion, mejorValorF, ordenFinal = menuDeModo()
 
