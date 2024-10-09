@@ -91,7 +91,7 @@ def busquedaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
         
     return matrizSolucion, mejorValorF, ordenAleatorio
 
-def localAuxiliar(ordenBueno, matrizFBuena,solucionFinal):
+def primerMejor(ordenBueno, matrizFBuena,solucionFinal):
 
     for i in range(len(ordenBueno)):
         for j in range(i+1,len(ordenBueno)):
@@ -110,18 +110,14 @@ def localAuxiliar(ordenBueno, matrizFBuena,solucionFinal):
 def busquedaLocal(numOrdenes, matrizD, numMaquinas):
 
     solucionFinal=float('inf')
-    #ordenBueno=genePermut(numOrdenes)
-    ordenBueno=[9,4,1,2,8,3,10,7,5,11,6]
+    ordenBueno=genePermut(numOrdenes)
     print(ordenBueno)
     matrizFBuena=devolverMatrizF(ordenBueno, matrizD, numMaquinas)
-    print("Matriz F Inicial")
-    for file in matrizFBuena:
-        print(file)
     solucionFinal=fMax(matrizFBuena)  
  
     
     while True:
-        ordenBueno, matrizFBuena, solucionPrimo=localAuxiliar(ordenBueno, matrizFBuena,solucionFinal)
+        ordenBueno, matrizFBuena, solucionPrimo=primerMejor(ordenBueno, matrizFBuena,solucionFinal)
         if solucionFinal == solucionPrimo:
             return matrizFBuena, solucionFinal, ordenBueno
         else:
@@ -144,7 +140,7 @@ def menuDeModo():
     print("--== Menu de Modos de Ejecucion ==-- \n"
             "    (elige el numero del modo)\n"
             "1) Modo Aleatorio\n"
-            "2) Modo Busqueda Local\n"
+            "2) Modo Busqueda Local - Primer Mejor\n"
             "3) Modo Recocido Simulado\n"
             "4) Modo Algoritmo Genetico\n")
 
@@ -173,11 +169,8 @@ orden=genePermut(numOrdenes)
 
 solucion, mejorValorF, ordenFinal = menuDeModo()
 
-print ("SOLUCION")
+print ("\nSOLUCION: ")
 for fila in solucion: 
     print(fila)
-print(mejorValorF)
-
-
-print ("Orden Final")
-print(ordenFinal)
+print("\nMejor Valor: "+str(mejorValorF))
+print ("\nOrden Final: "+ str(ordenFinal))
