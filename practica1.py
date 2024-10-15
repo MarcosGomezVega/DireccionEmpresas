@@ -153,6 +153,8 @@ def menuDeModo():
 
         case "2":
             solucion,mejorValorF,ordenFinal=busquedaLocal(numOrdenes,matrizD, numMaquinas)
+        case "3":
+            pass
 
     return solucion,mejorValorF, ordenFinal
 
@@ -166,7 +168,6 @@ def menuDeModo():
 
 numOrdenes,numMaquinas,matrizD=guardarValoresArchivo()
 orden=genePermut(numOrdenes)
-
 solucion, mejorValorF, ordenFinal = menuDeModo()
 
 print ("\nSOLUCION: ")
