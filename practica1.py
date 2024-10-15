@@ -1,4 +1,5 @@
 import random
+import math
 
 def guardarNombreArchivo():
     
@@ -78,12 +79,8 @@ def busquedaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
     for i in range(numIteraciones):
         ordenAleatorio=genePermut(numOrden)
         matrizF=devolverMatrizF(ordenAleatorio, matrizD, numMaquinas)
-        print("matriz "+str(i))
-        for fila in matrizF:
-            print(fila)
         maximoValorMatrizF=fMax(matrizF)
         mediaUltimaColumna = fMed( matrizF,numOrden)
-        print(mediaUltimaColumna)
         if maximoValorMatrizF<mejorValorF:
             mejorValorF=maximoValorMatrizF
             matrizSolucion=matrizF
@@ -111,7 +108,6 @@ def busquedaLocal(numOrdenes, matrizD, numMaquinas):
 
     solucionFinal=float('inf')
     ordenBueno=genePermut(numOrdenes)
-    print(ordenBueno)
     matrizFBuena=devolverMatrizF(ordenBueno, matrizD, numMaquinas)
     solucionFinal=fMax(matrizFBuena)  
  
@@ -123,6 +119,45 @@ def busquedaLocal(numOrdenes, matrizD, numMaquinas):
         else:
             solucionFinal=solucionPrimo
     
+def recocidoSimulado(numOrdenes, matrizD, numMaquinas):
+    ordenInicial = genePermut(numOrdenes)
+    matrizFBuena = devolverMatrizF(ordenInicial, matrizD, numMaquinas)
+    solucionActual = fMax(matrizFBuena)
+    mejorSolucion = solucionActual
+    mejorOrden = ordenInicial
+    T = solucionActual*0,35  # Temperatura inicial
+    T_min = 0.01  # Temperatura mínima
+    alpha = 0.9  # Factor de enfriamiento
+    L = 100  # Número de iteraciones en cada temperatura
+
+    while T > T_min:
+        for _ in range(L):
+            # Generar una nueva solución vecina
+            nuevaOrden = ordenInicial[:]
+            i, j = random.sample(range(numOrdenes), 2)
+            nuevaOrden[i], nuevaOrden[j] = nuevaOrden[j], nuevaOrden[i]
+            
+            # Calcular la nueva matriz y el valor de la función objetivo
+            matrizFVecina = devolverMatrizF(nuevaOrden, matrizD, numMaquinas)
+            solucionVecina = fMax(matrizFVecina)
+            
+            # Calcular la diferencia de costo
+            delta_E = solucionVecina - solucionActual
+            
+            # Aceptar la nueva solución
+            if delta_E < 0 or random.uniform(0, 1) < math.exp(-delta_E / T):
+                ordenInicial = nuevaOrden
+                solucionActual = solucionVecina
+                matrizFBuena = matrizFVecina
+                if solucionVecina < mejorSolucion:
+                    mejorSolucion = solucionVecina
+                    mejorOrden = nuevaOrden
+        
+        # Enfriar la temperatura
+        T *= alpha
+
+    return matrizFBuena, mejorSolucion, mejorOrden
+
 def fMax(matriz):
 
     maximo=max(row[-1] for row in matriz)
@@ -154,7 +189,7 @@ def menuDeModo():
         case "2":
             solucion,mejorValorF,ordenFinal=busquedaLocal(numOrdenes,matrizD, numMaquinas)
         case "3":
-            pass
+            solucion,mejorValorF,ordenFinal=recocidoSimulado(numOrdenes,matrizD, numMaquinas)
 
     return solucion,mejorValorF, ordenFinal
 
