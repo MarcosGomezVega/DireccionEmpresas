@@ -125,7 +125,7 @@ def recocidoSimulado(numOrdenes, matrizD, numMaquinas):
     solucionActual = fMax(matrizFBuena)
     mejorSolucion = solucionActual
     mejorOrden = ordenInicial
-    T = solucionActual*0,35  # Temperatura inicial
+    T = solucionActual*0.35  # Temperatura inicial
     T_min = 0.01  # Temperatura mínima
     alpha = 0.9  # Factor de enfriamiento
     L = 100  # Número de iteraciones en cada temperatura
@@ -158,6 +158,13 @@ def recocidoSimulado(numOrdenes, matrizD, numMaquinas):
 
     return matrizFBuena, mejorSolucion, mejorOrden
 
+def genetico(numOrdenes, matrizD, numMaquinas):
+    tamPoblacion=50
+    numGeneraciones=100
+    probCruzamiento=0.8
+    probMutacion=0.1
+    pass
+
 def fMax(matriz):
 
     maximo=max(row[-1] for row in matriz)
@@ -185,11 +192,12 @@ def menuDeModo():
         case "1":
             numeroDeIteraciones= input("Introduce el numero de iteraciones: ")
             solucion,mejorValorF, ordenFinal=busquedaAleatoria(numOrdenes, int(numeroDeIteraciones), matrizD, numMaquinas)
-
         case "2":
             solucion,mejorValorF,ordenFinal=busquedaLocal(numOrdenes,matrizD, numMaquinas)
         case "3":
             solucion,mejorValorF,ordenFinal=recocidoSimulado(numOrdenes,matrizD, numMaquinas)
+        case "4":
+            solucion,mejorValorF,ordenFinal=genetico(numOrdenes,matrizD, numMaquinas)
 
     return solucion,mejorValorF, ordenFinal
 
