@@ -160,29 +160,110 @@ def recocidoSimulado(numOrdenes, matrizD, numMaquinas):
 
 def genetico(numOrdenes, matrizD, numMaquinas):
     tamPoblacion=50
-    #numGeneraciones=100
-    #probCruzamiento=0.8
-    #probMutacion=0.1
+    probMutacion=1
+
     poblacionConFmax=[]
+    mejorSolucionFmax=float('inf')
+    solucionFmax=mejorSolucionFmax
 
     #Generar poblacion inicial
     poblacion = [genePermut(numOrdenes) for _ in range(tamPoblacion)]
-    #Calcular el valor de la funcion objetivo para cada individuo
     for orden in poblacion:
-        matrizF = devolverMatrizF(orden, matrizD, numMaquinas)
-        poblacionConFmax.append((orden, fMax(matrizF)))
+            matrizF = devolverMatrizF(orden, matrizD, numMaquinas)
+            poblacionConFmax.append((orden, fMax(matrizF)))
     #Ordenar la poblacion por el valor de la funcion objetivo
     poblacionConFmax.sort(key=lambda x: x[1])
-    #Seleccionar los individuos de la poblacion
-    poblacionSelecionada = seleccionTorneoAleatorio(poblacionConFmax)
+    mejorSolucionFmax=poblacionConFmax[0][1]
 
 
 
-    return poblacionSelecionada
+    while solucionFmax > mejorSolucionFmax:
+        #Calcular el valor de la funcion objetivo para cada individuo
+        for orden in poblacion:
+            matrizF = devolverMatrizF(orden, matrizD, numMaquinas)
+            poblacionConFmax.append((orden, fMax(matrizF)))
+        #Ordenar la poblacion por el valor de la funcion objetivo
+        poblacionConFmax.sort(key=lambda x: x[1])
+        #Seleccionar los individuos de la poblacion
+        poblacionSelecionada = seleccionTorneoAleatorio(poblacionConFmax)
+        #Cruzamiento
+        poblacionHios=[]
+        for _ in range((tamPoblacion//2)):
+            padre1=random.choice(poblacionSelecionada)
+            padre2=random.choice(poblacionSelecionada)
+            if random.randint(0,100) < probCruzamiento:
+                hijo1, hijo2 = cruzamientoPMX(padre1[0], padre2[0])
+                poblacionHios.append(hijo1)
+                poblacionHios.append(hijo2)
+            else:
+                poblacionHios.append(padre1[0])
+                poblacionHios.append(padre2[0])
+        #Mutacion
+        for i in range(tamPoblacion):
+            if random.randint(0,100) < probMutacion:
+                poblacionSelecionada[i] = mutacion(poblacionHios[i])
+        #Actualizar la poblacion
+        poblacion = poblacionSelecionada
+        #Actualizar el mejor valor de la funcion objetivo
+        mejorSolucionFmax = solucionFmax
+        solucionFmax = poblacionConFmax[0][1]
+    
 
-def cruzamientoOX(p1, p2):
     pass
 
+def mutacion(orden):
+    i, j = random.sample(range(len(orden)), 2)
+    orden[i], orden[j] = orden[j], orden[i]
+
+    return orden
+    
+
+def cruzamientoPMX(p1, p2):
+
+    
+    hijo1 = p1[:]
+    hijo2 = p2[:]
+    puntoCorte = random.randint(0, len(p1) - 1)
+    puntoCorte2 = random.randint(0, len(p2) - 1)
+    
+    if puntoCorte == puntoCorte2:
+        if puntoCorte2 == len(p2) - 1:
+            puntoCorte2 -= 1
+        else:
+            puntoCorte2+=1
+
+    if puntoCorte > puntoCorte2:
+        puntoEsxtra=puntoCorte2
+        puntoCorte2=puntoCorte
+        puntoCorte=puntoEsxtra
+
+    diferencia = puntoCorte2 - puntoCorte
+    listaPuntoCorteHijo1 = [0 for _ in range(diferencia)]
+    listaPuntoCorteHijo2 = [0 for _ in range(diferencia)]
+    for i in range(puntoCorte, puntoCorte2):
+        listaPuntoCorteHijo1[i-puntoCorte] = p2[i]
+        listaPuntoCorteHijo2[i-puntoCorte] = p1[i]
+    for i in range(len(p1)):
+        if puntoCorte <= i < puntoCorte2:
+            hijo1[i] = listaPuntoCorteHijo1[i-puntoCorte]
+            hijo2[i] = listaPuntoCorteHijo2[i-puntoCorte]
+        else:
+           
+            if p1[i] in listaPuntoCorteHijo1:
+                indice=listaPuntoCorteHijo1.index(p1[i])
+                hijo1[i]=listaPuntoCorteHijo2[indice]
+            else:
+                hijo1[i]=p1[i]
+            if p2[i] in listaPuntoCorteHijo2:
+                indice=listaPuntoCorteHijo2.index(p2[i])
+                hijo2[i]=listaPuntoCorteHijo1[indice]
+            else:
+                hijo2[i]=p2[i]
+                
+            
+
+    return hijo1, hijo2
+    
 def seleccionTorneoAleatorio(poblacion):
     tamPoblacion = len(poblacion)
     seleccionados=[[0]  for _ in range(tamPoblacion)]
