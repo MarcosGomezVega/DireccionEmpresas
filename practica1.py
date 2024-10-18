@@ -5,9 +5,9 @@ def guardarNombreArchivo():
     
     file_name = input("Introduce el nombre del archivo: ")
 
-    #file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/{file_name}'
+    file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/PracticaPrgramacion/ProblemasFlowShopPermutacional/{file_name}'
     #file_path = f'C:/Users/pablo/Desktop/Estudios/Universidad/4º/1 cuatri/Org y Gest Empresas/Practica/ProblemasFlowShopPermutacional/{file_name}'
-    file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/ejem_clase1.txt'
+    #file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/ejem_clase1.txt'
 
     return file_path
 
@@ -160,10 +160,44 @@ def recocidoSimulado(numOrdenes, matrizD, numMaquinas):
 
 def genetico(numOrdenes, matrizD, numMaquinas):
     tamPoblacion=50
-    numGeneraciones=100
-    probCruzamiento=0.8
-    probMutacion=0.1
+    #numGeneraciones=100
+    #probCruzamiento=0.8
+    #probMutacion=0.1
+    poblacionConFmax=[]
+
+    #Generar poblacion inicial
+    poblacion = [genePermut(numOrdenes) for _ in range(tamPoblacion)]
+    #Calcular el valor de la funcion objetivo para cada individuo
+    for orden in poblacion:
+        matrizF = devolverMatrizF(orden, matrizD, numMaquinas)
+        poblacionConFmax.append((orden, fMax(matrizF)))
+    #Ordenar la poblacion por el valor de la funcion objetivo
+    poblacionConFmax.sort(key=lambda x: x[1])
+    #Seleccionar los individuos de la poblacion
+    poblacionSelecionada = seleccionTorneoAleatorio(poblacionConFmax)
+
+
+
+    return poblacionSelecionada
+
+def cruzamientoOX(p1, p2):
     pass
+
+def seleccionTorneoAleatorio(poblacion):
+    tamPoblacion = len(poblacion)
+    seleccionados=[[0]  for _ in range(tamPoblacion)]
+    
+    for i in range(tamPoblacion):
+        selecionado1=random.randint(0, tamPoblacion - 1)
+        selecionado2=random.randint(0, tamPoblacion - 1)
+        
+
+        if poblacion[selecionado1][1] < poblacion[selecionado2][1]:
+            seleccionados[i]=poblacion[selecionado1]
+        else:
+            seleccionados[i]=poblacion[selecionado2]
+
+    return seleccionados
 
 def fMax(matriz):
 
