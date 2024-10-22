@@ -161,7 +161,7 @@ def recocidoSimulado(numOrdenes, matrizD, numMaquinas):
 def genetico(numOrdenes, matrizD, numMaquinas):
     tamPoblacion=50
     probMutacion=1
-
+    probCruzamiento=10
     poblacionConFmax=[]
     mejorSolucionFmax=float('inf')
     solucionFmax=mejorSolucionFmax
@@ -202,6 +202,8 @@ def genetico(numOrdenes, matrizD, numMaquinas):
         for i in range(tamPoblacion):
             if random.randint(0,100) < probMutacion:
                 poblacionSelecionada[i] = mutacion(poblacionHios[i])
+            
+        #MIRAR SI ESTA BIEN HECHO !!!!!!!!!
         #Actualizar la poblacion
         poblacion = poblacionSelecionada
         #Actualizar el mejor valor de la funcion objetivo
