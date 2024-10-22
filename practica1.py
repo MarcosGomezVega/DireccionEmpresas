@@ -187,29 +187,45 @@ def genetico(numOrdenes, matrizD, numMaquinas):
         #Seleccionar los individuos de la poblacion
         poblacionSelecionada = seleccionTorneoAleatorio(poblacionConFmax)
         #Cruzamiento
-        poblacionHios=[]
+        poblacionHijos=[]
         for _ in range((tamPoblacion//2)):
             padre1=random.choice(poblacionSelecionada)
             padre2=random.choice(poblacionSelecionada)
             if random.randint(0,100) < probCruzamiento:
                 hijo1, hijo2 = cruzamientoPMX(padre1[0], padre2[0])
-                poblacionHios.append(hijo1)
-                poblacionHios.append(hijo2)
+                poblacionHijos.append(hijo1)
+                poblacionHijos.append(hijo2)
             else:
-                poblacionHios.append(padre1[0])
-                poblacionHios.append(padre2[0])
+                poblacionHijos.append(padre1[0])
+                poblacionHijos.append(padre2[0])
         #Mutacion
+        poblacionMutada=[0 for _ in range(tamPoblacion)]
         for i in range(tamPoblacion):
             if random.randint(0,100) < probMutacion:
-                poblacionSelecionada[i] = mutacion(poblacionHios[i])
+                poblacionMutada[i] = mutacion(poblacionHijos[i])
+            else:
+                poblacionMutada[i] = poblacionHijos[i]
             
         #MIRAR SI ESTA BIEN HECHO !!!!!!!!!
+
+        mejorPoblacionInicial=poblacionConFmax[0]
+
         #Actualizar la poblacion
-        poblacion = poblacionSelecionada
+        for i in range(len(poblacionMutada)):
+            poblacion[i] = poblacionMutada[i]
+        #Actualizar la mejor poblacion
+        poblacion.append(mejorPoblacionInicial)
+
         #Actualizar el mejor valor de la funcion objetivo
-        mejorSolucionFmax = solucionFmax
-        solucionFmax = poblacionConFmax[0][1]
-    
+        mejorSolucionFmax = mejorPoblacionInicial[1]
+
+        
+        for orden in poblacion:
+            matrizF = devolverMatrizF(orden, matrizD, numMaquinas)
+            poblacionConFmax.append((orden, fMax(matrizF)))
+         #Ordenar la poblacion por el valor de la funcion objetivo
+        poblacionConFmax.sort(key=lambda x: x[1])
+        solucionFmax=poblacionConFmax[0][1]
 
     pass
 
@@ -219,7 +235,6 @@ def mutacion(orden):
 
     return orden
     
-
 def cruzamientoPMX(p1, p2):
 
     
