@@ -159,12 +159,12 @@ def recocidoSimulado(numOrdenes, matrizD, numMaquinas):
     return matrizFBuena, mejorSolucion, mejorOrden
 
 def genetico(numOrdenes, matrizD, numMaquinas):
-    tamPoblacion=50
+    tamPoblacion=1000
     probMutacion=1
-    probCruzamiento=10
+    probCruzamiento=0.8
     poblacionConFmax=[]
-    mejorSolucionFmax=float('inf')
-    solucionFmax=mejorSolucionFmax
+    numMaxGeneraciones=100
+    generacion=0
 
     #Generar poblacion inicial
     poblacion = [genePermut(numOrdenes) for _ in range(tamPoblacion)]
@@ -173,31 +173,43 @@ def genetico(numOrdenes, matrizD, numMaquinas):
             poblacionConFmax.append((orden, fMax(matrizF)))
     #Ordenar la poblacion por el valor de la funcion objetivo
     poblacionConFmax.sort(key=lambda x: x[1])
-    mejorSolucionFmax=poblacionConFmax[0][1]
 
 
-
-    while solucionFmax > mejorSolucionFmax:
+    while generacion<numMaxGeneraciones:
         #Calcular el valor de la funcion objetivo para cada individuo
         for orden in poblacion:
             matrizF = devolverMatrizF(orden, matrizD, numMaquinas)
             poblacionConFmax.append((orden, fMax(matrizF)))
         #Ordenar la poblacion por el valor de la funcion objetivo
         poblacionConFmax.sort(key=lambda x: x[1])
+
         #Seleccionar los individuos de la poblacion
         poblacionSelecionada = seleccionTorneoAleatorio(poblacionConFmax)
-        #Cruzamiento
+        
+
+
+        #Cruzamiento por PMX
         poblacionHijos=[]
-        for _ in range((tamPoblacion//2)):
-            padre1=random.choice(poblacionSelecionada)
-            padre2=random.choice(poblacionSelecionada)
-            if random.randint(0,100) < probCruzamiento:
-                hijo1, hijo2 = cruzamientoPMX(padre1[0], padre2[0])
-                poblacionHijos.append(hijo1)
-                poblacionHijos.append(hijo2)
-            else:
-                poblacionHijos.append(padre1[0])
-                poblacionHijos.append(padre2[0])
+        tamanoPoblacionCruce = int(tamPoblacion * probCruzamiento)
+        if tamanoPoblacionCruce % 2 != 0:
+            tamanoPoblacionCruce+=1
+        
+        #Cruzamos el 80% de la poblacion
+        for i in range(tamanoPoblacionCruce//2):
+            padre1=poblacionSelecionada[i]
+            i+=1
+            padre2=poblacionSelecionada[i]
+            
+            hijo1, hijo2 = cruzamientoPMX(padre1[0], padre2[0])
+            poblacionHijos.append(hijo1)
+            poblacionHijos.append(hijo2)
+            i+=1
+            
+        #Mete en hijos el 20% que no se cruza
+        for i in range(tamanoPoblacionCruce,tamPoblacion):
+            poblacionHijos.append(poblacionSelecionada[i][0])
+            
+
         #Mutacion
         poblacionMutada=[0 for _ in range(tamPoblacion)]
         for i in range(tamPoblacion):
@@ -206,9 +218,7 @@ def genetico(numOrdenes, matrizD, numMaquinas):
             else:
                 poblacionMutada[i] = poblacionHijos[i]
             
-        #MIRAR SI ESTA BIEN HECHO !!!!!!!!!
-
-        mejorPoblacionInicial=poblacionConFmax[0]
+        mejorPoblacionInicial=poblacionConFmax[0][0]
 
         #Actualizar la poblacion
         for i in range(len(poblacionMutada)):
@@ -216,32 +226,29 @@ def genetico(numOrdenes, matrizD, numMaquinas):
         #Actualizar la mejor poblacion
         poblacion.append(mejorPoblacionInicial)
 
-        #Actualizar el mejor valor de la funcion objetivo
-        mejorSolucionFmax = mejorPoblacionInicial[1]
+        generacion+=1
 
+    solucionOrden=poblacionConFmax[0][0]
+    solucionMatrizF=devolverMatrizF(solucionOrden, matrizD, numMaquinas)
+    mejorValorF=fMax(solucionMatrizF)
+
+    return solucionMatrizF, mejorValorF, solucionOrden
         
-        for orden in poblacion:
-            matrizF = devolverMatrizF(orden, matrizD, numMaquinas)
-            poblacionConFmax.append((orden, fMax(matrizF)))
-         #Ordenar la poblacion por el valor de la funcion objetivo
-        poblacionConFmax.sort(key=lambda x: x[1])
-        solucionFmax=poblacionConFmax[0][1]
-
-    pass
-
 def mutacion(orden):
-    i, j = random.sample(range(len(orden)), 2)
+    i=random.randint(0,len(orden)-1)
+    j=random.randint(0,len(orden)-1)
     orden[i], orden[j] = orden[j], orden[i]
 
     return orden
     
 def cruzamientoPMX(p1, p2):
 
-    
     hijo1 = p1[:]
     hijo2 = p2[:]
     puntoCorte = random.randint(0, len(p1) - 1)
     puntoCorte2 = random.randint(0, len(p2) - 1)
+
+  
     
     if puntoCorte == puntoCorte2:
         if puntoCorte2 == len(p2) - 1:
@@ -268,12 +275,24 @@ def cruzamientoPMX(p1, p2):
            
             if p1[i] in listaPuntoCorteHijo1:
                 indice=listaPuntoCorteHijo1.index(p1[i])
-                hijo1[i]=listaPuntoCorteHijo2[indice]
+                valorCambiar=listaPuntoCorteHijo2[indice]
+
+                while valorCambiar in listaPuntoCorteHijo1:
+                    indice=listaPuntoCorteHijo1.index(valorCambiar)
+                    valorCambiar=listaPuntoCorteHijo2[indice]
+
+                hijo1[i]=valorCambiar
             else:
                 hijo1[i]=p1[i]
             if p2[i] in listaPuntoCorteHijo2:
                 indice=listaPuntoCorteHijo2.index(p2[i])
-                hijo2[i]=listaPuntoCorteHijo1[indice]
+                valorCambiar=listaPuntoCorteHijo1[indice]
+
+                while valorCambiar in listaPuntoCorteHijo2:
+                    indice=listaPuntoCorteHijo2.index(valorCambiar)
+                    valorCambiar=listaPuntoCorteHijo1[indice]
+
+                hijo2[i]=valorCambiar
             else:
                 hijo2[i]=p2[i]
                 
@@ -283,9 +302,9 @@ def cruzamientoPMX(p1, p2):
     
 def seleccionTorneoAleatorio(poblacion):
     tamPoblacion = len(poblacion)
-    seleccionados=[[0]  for _ in range(tamPoblacion)]
+    seleccionados=[[0]  for _ in range(tamPoblacion//2)]
     
-    for i in range(tamPoblacion):
+    for i in range(tamPoblacion//2):
         selecionado1=random.randint(0, tamPoblacion - 1)
         selecionado2=random.randint(0, tamPoblacion - 1)
         
@@ -340,6 +359,7 @@ def menuDeModo():
 #        MAIN PROGRAM        #
 #                            #
 #----------------------------#
+
 
 numOrdenes,numMaquinas,matrizD=guardarValoresArchivo()
 orden=genePermut(numOrdenes)
