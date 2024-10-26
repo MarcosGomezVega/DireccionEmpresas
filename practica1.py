@@ -176,18 +176,17 @@ def genetico(numOrdenes, matrizD, numMaquinas):
 
 
     while generacion<numMaxGeneraciones:
-        #Calcular el valor de la funcion objetivo para cada individuo
-        for orden in poblacion:
-            matrizF = devolverMatrizF(orden, matrizD, numMaquinas)
-            poblacionConFmax.append((orden, fMax(matrizF)))
-        #Ordenar la poblacion por el valor de la funcion objetivo
-        poblacionConFmax.sort(key=lambda x: x[1])
+        if generacion !=0:
+            #Calcular el valor de la funcion objetivo para cada individuo
+            for i in range(len(poblacion)):
+                matrizF = devolverMatrizF(poblacion[i], matrizD, numMaquinas)
+                poblacionConFmax[i]=(poblacion[i], fMax(matrizF))
+            #Ordenar la poblacion por el valor de la funcion objetivo
+            poblacionConFmax.sort(key=lambda x: x[1])
 
         #Seleccionar los individuos de la poblacion
         poblacionSelecionada = seleccionTorneoAleatorio(poblacionConFmax)
         
-
-
         #Cruzamiento por PMX
         poblacionHijos=[]
         tamanoPoblacionCruce = int(tamPoblacion * probCruzamiento)
@@ -223,8 +222,14 @@ def genetico(numOrdenes, matrizD, numMaquinas):
         #Actualizar la poblacion
         for i in range(len(poblacionMutada)):
             poblacion[i] = poblacionMutada[i]
+        
+
         #Actualizar la mejor poblacion
-        poblacion.append(mejorPoblacionInicial)
+        if len(poblacion) != tamPoblacion+1:
+            poblacion.append(mejorPoblacionInicial)
+            poblacionConFmax.append(0)
+        elif len(poblacion) == tamPoblacion+1:
+            poblacion[tamPoblacion] = mejorPoblacionInicial
 
         generacion+=1
 
@@ -302,9 +307,9 @@ def cruzamientoPMX(p1, p2):
     
 def seleccionTorneoAleatorio(poblacion):
     tamPoblacion = len(poblacion)
-    seleccionados=[[0]  for _ in range(tamPoblacion//2)]
+    seleccionados=[[0]  for _ in range(tamPoblacion)]
     
-    for i in range(tamPoblacion//2):
+    for i in range(tamPoblacion):
         selecionado1=random.randint(0, tamPoblacion - 1)
         selecionado2=random.randint(0, tamPoblacion - 1)
         
