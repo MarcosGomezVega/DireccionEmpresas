@@ -6,7 +6,7 @@ def guardarNombreArchivo():
     file_name = input("Introduce el nombre del archivo: ")
 
     file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/PracticaPrgramacion/ProblemasFlowShopPermutacional/{file_name}'
-    #file_path = f'C:/Users/pablo/Desktop/Estudios/Universidad/4º/1 cuatri/Org y Gest Empresas/Practica/ProblemasFlowShopPermutacional/{file_name}'
+    #file_path = f'C:/Users/pablo/Desktop/Estudios/Universidad/4º/1 cuatri/Org y Gest Empresas/Practica/DireccionEmpresas/ProblemasFlowShopPermutacional/{file_name}'
     #file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/ejem_clase1.txt'
 
     return file_path
