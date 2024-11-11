@@ -505,7 +505,8 @@ numOrdenes,numMaquinas,matrizD=guardarValoresArchivo()
 orden=genePermut(numOrdenes)
 solucion, mejorValorF, ordenFinal = menuDeModo()
 
-print ("\nSOLUCION: ")
+print ("\nSOLUCION: \n")
+print ("Matriz de tiempos de finalizacion: ")
 for fila in solucion: 
     print(fila)
 print("\nMejor Valor: "+str(mejorValorF))
