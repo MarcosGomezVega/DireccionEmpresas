@@ -2,17 +2,25 @@ import random
 import math
 
 def guardarNombreArchivo():
-    
+    """
+    Solicita al usuario el nombre del archivo y construye la ruta completa.
+
+    Returns:
+        str: La ruta completa del archivo.
+    """
     file_name = input("Introduce el nombre del archivo: ")
 
-    file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/PracticaPrgramacion/ProblemasFlowShopPermutacional/{file_name}'
-    #file_path = f'C:/Users/pablo/Desktop/Estudios/Universidad/4º/1 cuatri/Org y Gest Empresas/Practica/ProblemasFlowShopPermutacional/{file_name}'
-    #file_path = f'C:/Users/marco/OneDrive - Universidad de Burgos/Escritorio/Empresas/Practicas/ProblemasFlowShopPermutacional/ejem_clase1.txt'
-
+    file_path = f'./ProblemasFlowShopPermutacional/{file_name}'
+   
     return file_path
 
 def guardarValoresArchivo():
-    
+    """
+    Lee el contenido del archivo y extrae los valores necesarios.
+
+    Returns:
+        tuple: Número de órdenes, número de máquinas y la matriz de tiempos procesada.
+    """
     with open(guardarNombreArchivo(), 'r', encoding='utf-8') as file:
         content = file.read()
 
@@ -37,7 +45,15 @@ def guardarValoresArchivo():
     return numOrdenes,numMaquinas,matrizBuena
 
 def genePermut (numOrdenes):
+    """
+    Genera una permutación aleatoria de las órdenes.
 
+    Args:
+        numOrdenes (int): Número de órdenes.
+
+    Returns:
+        list: Lista con una permutación aleatoria de las órdenes.
+    """
     permut=[]
     listaOrdenes=[]
     
@@ -52,6 +68,17 @@ def genePermut (numOrdenes):
     return permut
 
 def devolverMatrizF ( orden, matriz, numMaquinas ):
+    """
+    Calcula la matriz de tiempos de finalización (matriz F) para un orden dado de las órdenes.
+
+    Args:
+        orden (list): Lista con el orden de las órdenes.
+        matriz (list): Matriz de tiempos de procesamiento.
+        numMaquinas (int): Número de máquinas.
+
+    Returns:
+        list: Matriz de tiempos de finalización.
+    """    
     matrizF = [[0] * len(matriz[0]) for _ in range(len(matriz))]
 
     for maquina in range(numMaquinas):
@@ -73,6 +100,18 @@ def devolverMatrizF ( orden, matriz, numMaquinas ):
     return matrizF
         
 def busquedaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
+    """
+    Realiza una búsqueda aleatoria para encontrar una solución al problema de secuenciación de órdenes.
+
+    Args:
+        numOrden (int): Número de órdenes.
+        numIteraciones (int): Número de iteraciones a realizar.
+        matrizD (list): Matriz de tiempos de procesamiento.
+        numMaquinas (int): Número de máquinas.
+
+    Returns:
+        tuple: Matriz de tiempos de finalización de la mejor solución, el mejor valor de la función objetivo y el orden de las órdenes correspondiente.
+    """
     matrizSolucion=[]
     mejorValorF=float('inf')
 
@@ -80,7 +119,7 @@ def busquedaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
         ordenAleatorio=genePermut(numOrden)
         matrizF=devolverMatrizF(ordenAleatorio, matrizD, numMaquinas)
         maximoValorMatrizF=fMax(matrizF)
-        mediaUltimaColumna = fMed( matrizF,numOrden)
+        #mediaUltimaColumna = fMed( matrizF,numOrden)
         if maximoValorMatrizF<mejorValorF:
             mejorValorF=maximoValorMatrizF
             matrizSolucion=matrizF
@@ -89,7 +128,17 @@ def busquedaAleatoria(numOrden, numIteraciones, matrizD, numMaquinas):
     return matrizSolucion, mejorValorF, ordenAleatorio
 
 def primerMejor(ordenBueno, matrizFBuena,solucionFinal):
+    """
+    Realiza una búsqueda local para encontrar una mejor solución al problema de secuenciación de órdenes.
 
+    Args:
+        ordenBueno (list): Lista con el orden actual de las órdenes.
+        matrizFBuena (list): Matriz de tiempos de finalización actual.
+        solucionFinal (float): Valor de la función objetivo de la solución actual.
+
+    Returns:
+        tuple: El mejor orden de las órdenes, la mejor matriz de tiempos de finalización y el mejor valor de la función objetivo.
+    """
     for i in range(len(ordenBueno)):
         for j in range(i+1,len(ordenBueno)):
             ordenPrimos=ordenBueno.copy()
@@ -105,7 +154,17 @@ def primerMejor(ordenBueno, matrizFBuena,solucionFinal):
     return ordenBueno, matrizFBuena, solucionFinal
 
 def busquedaLocal(numOrdenes, matrizD, numMaquinas):
+    """
+    Realiza una búsqueda local para encontrar una mejor solución al problema de secuenciación de órdenes.
 
+    Args:
+        numOrdenes (int): Número de órdenes.
+        matrizD (list): Matriz de tiempos de procesamiento.
+        numMaquinas (int): Número de máquinas.
+
+    Returns:
+        tuple: La mejor matriz de tiempos de finalización, el mejor valor de la función objetivo y el mejor orden de las órdenes.
+    """
     solucionFinal=float('inf')
     ordenBueno=genePermut(numOrdenes)
     matrizFBuena=devolverMatrizF(ordenBueno, matrizD, numMaquinas)
@@ -120,6 +179,17 @@ def busquedaLocal(numOrdenes, matrizD, numMaquinas):
             solucionFinal=solucionPrimo
     
 def recocidoSimulado(numOrdenes, matrizD, numMaquinas):
+    """
+    Realiza una búsqueda de solución utilizando el algoritmo de recocido simulado.
+
+    Args:
+        numOrdenes (int): Número de órdenes.
+        matrizD (list): Matriz de tiempos de procesamiento.
+        numMaquinas (int): Número de máquinas.
+
+    Returns:
+        tuple: La mejor matriz de tiempos de finalización, el mejor valor de la función objetivo y el mejor orden de las órdenes.
+    """    
     ordenInicial = genePermut(numOrdenes)
     matrizFBuena = devolverMatrizF(ordenInicial, matrizD, numMaquinas)
     solucionActual = fMax(matrizFBuena)
@@ -159,6 +229,17 @@ def recocidoSimulado(numOrdenes, matrizD, numMaquinas):
     return matrizFBuena, mejorSolucion, mejorOrden
 
 def genetico(numOrdenes, matrizD, numMaquinas):
+    """
+    Realiza una búsqueda de solución utilizando el algoritmo genético.
+
+    Args:
+        numOrdenes (int): Número de órdenes.
+        matrizD (list): Matriz de tiempos de procesamiento.
+        numMaquinas (int): Número de máquinas.
+
+    Returns:
+        tuple: La mejor matriz de tiempos de finalización, el mejor valor de la función objetivo y el mejor orden de las órdenes.
+    """    
     tamPoblacion=1000
     probMutacion=1
     probCruzamiento=0.8
@@ -208,7 +289,6 @@ def genetico(numOrdenes, matrizD, numMaquinas):
         for i in range(tamanoPoblacionCruce,tamPoblacion):
             poblacionHijos.append(poblacionSelecionada[i][0])
             
-
         #Mutacion
         poblacionMutada=[0 for _ in range(tamPoblacion)]
         for i in range(tamPoblacion):
@@ -240,6 +320,15 @@ def genetico(numOrdenes, matrizD, numMaquinas):
     return solucionMatrizF, mejorValorF, solucionOrden
         
 def mutacion(orden):
+    """
+    Realiza una mutación en el orden de las órdenes.
+
+    Args:
+        orden (list): Lista con el orden de las órdenes.
+
+    Returns:
+        list: Lista con el orden de las órdenes mutado.
+    """
     i=random.randint(0,len(orden)-1)
     j=random.randint(0,len(orden)-1)
     orden[i], orden[j] = orden[j], orden[i]
@@ -248,6 +337,16 @@ def mutacion(orden):
     
 def cruzamientoPMX(p1, p2):
 
+    """
+    Realiza el cruzamiento PMX (Partially Mapped Crossover) entre dos padres.
+
+    Args:
+        p1 (list): Primer padre.
+        p2 (list): Segundo padre.
+
+    Returns:
+        tuple: Dos listas que representan los hijos generados por el cruzamiento PMX.
+    """    
     hijo1 = p1[:]
     hijo2 = p2[:]
     puntoCorte = random.randint(0, len(p1) - 1)
@@ -266,18 +365,22 @@ def cruzamientoPMX(p1, p2):
         puntoCorte2=puntoCorte
         puntoCorte=puntoEsxtra
 
+    #creamos las listas de los puntos de corte
     diferencia = puntoCorte2 - puntoCorte
     listaPuntoCorteHijo1 = [0 for _ in range(diferencia)]
     listaPuntoCorteHijo2 = [0 for _ in range(diferencia)]
     for i in range(puntoCorte, puntoCorte2):
         listaPuntoCorteHijo1[i-puntoCorte] = p2[i]
         listaPuntoCorteHijo2[i-puntoCorte] = p1[i]
+
+    #Creamos la mutacion
     for i in range(len(p1)):
+        #miramos si estamos dentro de los puntos de corte
         if puntoCorte <= i < puntoCorte2:
             hijo1[i] = listaPuntoCorteHijo1[i-puntoCorte]
             hijo2[i] = listaPuntoCorteHijo2[i-puntoCorte]
         else:
-           
+            #miramos si el valor de p1 esta en la lista de los puntos de corte
             if p1[i] in listaPuntoCorteHijo1:
                 indice=listaPuntoCorteHijo1.index(p1[i])
                 valorCambiar=listaPuntoCorteHijo2[indice]
@@ -289,6 +392,7 @@ def cruzamientoPMX(p1, p2):
                 hijo1[i]=valorCambiar
             else:
                 hijo1[i]=p1[i]
+            #miramos si el valor de p2 esta en la lista de los puntos de corte
             if p2[i] in listaPuntoCorteHijo2:
                 indice=listaPuntoCorteHijo2.index(p2[i])
                 valorCambiar=listaPuntoCorteHijo1[indice]
@@ -306,6 +410,15 @@ def cruzamientoPMX(p1, p2):
     return hijo1, hijo2
     
 def seleccionTorneoAleatorio(poblacion):
+    """
+    Realiza la selección de individuos mediante el método de torneo aleatorio.
+
+    Args:
+        poblacion (list): Lista de individuos con sus valores de función objetivo.
+
+    Returns:
+        list: Lista de individuos seleccionados.
+    """
     tamPoblacion = len(poblacion)
     seleccionados=[[0]  for _ in range(tamPoblacion)]
     
@@ -322,19 +435,41 @@ def seleccionTorneoAleatorio(poblacion):
     return seleccionados
 
 def fMax(matriz):
+    """
+    Calcula el valor máximo de la última columna de la matriz.
 
+    Args:
+        matriz (list): Matriz de tiempos de finalización.
+
+    Returns:
+        int: El valor máximo de la última columna de la matriz.
+    """
     maximo=max(row[-1] for row in matriz)
 
     return maximo
 
 def fMed(matriz, numOrden):
+    """
+    Calcula el valor promedio de la última columna de la matriz.
 
+    Args:
+        matriz (list): Matriz de tiempos de finalización.
+        numOrden (int): Número de órdenes.
+
+    Returns:
+        float: El valor promedio de la última columna de la matriz.
+    """
     promedio = sum(row[-1] for row in matriz) / numOrden
 
     return promedio
 
 def menuDeModo():
+    """
+    Muestra el menú de modos de ejecución y solicita al usuario que seleccione uno.
 
+    Returns:
+        tuple: La mejor matriz de tiempos de finalización, el mejor valor de la función objetivo y el mejor orden de las órdenes.
+    """
     print("--== Menu de Modos de Ejecucion ==-- \n"
             "    (elige el numero del modo)\n"
             "1) Modo Aleatorio\n"
